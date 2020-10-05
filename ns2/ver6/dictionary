@@ -1,0 +1,12 @@
+global
+  CarDict : { 'Cid' : <car>' }
+  CluDict : { 'Cid' : <car>' }
+  CHDict  : { <Car> : #CM    }
+Car Class
+  Pun : { 'Cid : pakCount' }
+  Pcm : { 'Cid : pakCount' }
+  Pch : { 'Cid : pakCount' }
+  Pd  : { 'Cid : pakCount' }
+  CluMember = [ '<car>' ]
+  parentCar = <car>
+  childList = [ '<car>' ]

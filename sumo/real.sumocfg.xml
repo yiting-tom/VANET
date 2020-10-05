@@ -1,0 +1,11 @@
+<configuration>
+<input>
+  <net-file value="real.net.xml"/>
+  <route-files value="real.rou.xml"/>
+</input>
+<time>
+  <begin value="0"/>
+  <end value="110"/>
+  <step-length value="0.01"/>
+</time>
+</configuration>
