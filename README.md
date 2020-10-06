@@ -146,7 +146,7 @@
 > ![eq5](./pictures/eq5.png)
 > 
 > 叢集選擇 演算法 2 中，以接收到的邀請封包與傳輸失敗的封包之差，為原始預測連線存活參數(predicted connection survival time argument, pcs)，由(3)式、(4)式、(5)式進行獎勵與懲罰，其中為了調整每式造成的影響程度，加入LLTF、ANGF、SCF參數。
-> > 演算法 2  叢集選擇 (Cluster Selection algorithm, SC) 
+> > - 演算法 2  叢集選擇 (Cluster Selection algorithm, SC) 
 > >
 > > ```
 > > LET cand_map TO EMPTY_MAP
@@ -169,3 +169,79 @@
 > > ```
 
 # 連線維護
+
+> 車輛間的連線可能由於意外事件，而導致連線品質降低，此時若與child斷開連線，強制使child建立新的叢集或加入其他叢集，會比持續但低效率的傳輸更好。藉由parent定期對child的檢查，若parent與child的連線品質低於parent與其他children的連線品質兩個標準差之外，則與其斷線，並使child的Tcollect強制到期，並於child建立叢集或與其他從即建立連線後與其斷線，過程使用連線維護 演算法 3 ：
+>
+> > 演算法 3  連線維護 (Connection Management algorithm, CM)
+> > ```
+> > FOR child in C.childrenList DO 
+> >     LET μ TO average LLT of other children
+> >     LET σ TO standard deviation LLT of other chil-dren
+> >     IF LLT(child, C) <  μ – 2* σ THEN
+> >             make child GOTO EVENT_TIMEUP(Force)
+> >             CAR_DISCONNECT(C, parent)
+> >         END IF
+> > END FOR
+> > ```
+
+# 效能分析
+> 以OpenStreetMap[11]與SUMO[12]模擬台中市臺灣大道與五權路交叉路口為中心，1,024,000,000平方公尺範圍作為模擬環境地 圖1，並生成任意數量、旅程的行車 圖2，模擬300秒，並使用NS-2[13][14]模擬實際行車與封包傳遞，其中使用參數表3。
+> 
+> > - 圖 2、圖 3 模擬環境地圖
+> > ![map](pictures/map.png) ![map](pictures/map2.png)
+>
+> > - 表 3 參數設定
+> > 
+> > 參數 | 設定值
+> > |:-:|:-:|
+> > 模擬環境大小 | 3200m * 3200m
+> > MAC協定 | IEEE 802.11p
+> > 傳輸範圍 | 300m
+> > 傳輸速率 | 2Mbps
+> > 最大CM數量 | 15
+> > 邀請封包週期 | 50ms
+> > 邀請封包大小 | 64Bytes
+> > 行車資訊封包週期 | 500ms
+> > 行車資訊封包大小 | 10kb
+> > Tcollect週期 | 3s
+> > 
+> 實驗中將使用最小辨識碼叢集方法(Lowest Identification Clustering, LID)[10]、最大連結度叢集方法(High Connectivity Clustering, HCC)[10]與最大封包數量方法(Maximum Packet Collection, MPC)作為比較，其中LID作法以具有最小辨識碼的節點作為CH，其優點為容易挑選CH，但容易使叢集數量增加。而HCC作法則以具有最多連結的節點作為CH，若連結數相同則以LID作為CH，優點可降低叢集總數，但其中於最大傳輸範圍附近的節點可能會時常脫離又進入傳輸範圍，造成傳輸品質低落。而MPC方法則是以接收到的邀請封包為挑選根據，節點會優先加入接收到最多邀請封包的叢集，優點為當下挑選的叢集為通訊品質最佳叢集，但可能由於行車環境改變而造成不穩定。
+> 
+> 由於節點的分布和移動對叢集的穩定程度有相當的影響，因此以下實驗將以累積方式記錄，以降低節點移動方式對實驗數據的分析。 圖 4 累積叢集首與基礎設施斷線次數， 圖 5 累積叢集數量， 圖 6 累積叢集首存活平均時間， 圖 7 累積平均成員數量。由於叢集與基礎設施建立連線需耗費的成本，要比車輛間建立連線要高出許多，因此叢集與基礎設施的斷線次數越多，則代表叢集與基礎設施的連線品質越差，若能降低叢集與基礎設施的斷線數量，則可提升V2I的傳輸效率。圖 4 為時間對叢集首與基礎設施斷線累積次數，圖中以HCC表現最差，由於HCC的特性，大型的叢集會隨時間緩緩擴大，而小型叢集則會越來越小、越來越多；且若於最大連線範圍附近的節點，加入叢集後又極易脫離範圍，並於脫離範圍後建立新的叢集，但不久後又加入叢集，此行為會造成大量額外成本。圖中表現最好的為MPCS演算法，由此可知叢集選擇 (Cluster Selection CS) 演算法於預測最佳叢集具有相當的成效。
+> 
+> - 圖 4 時間 – 叢集首與基礎設施斷線累積次數
+> ![g1](pictures/graph1.png)
+> 
+> 由於叢集數量越少，叢集化所帶來的優點越明顯，對基礎設施附近的干擾也越少，且車輛間的冗餘資訊也能大幅降低，由 圖 5 時間對平均叢集成員數量，可得知MPCS與HCC於降低叢集數量有明顯效果，MPC由於不刻意降低叢集數量，只考慮節點與節點間的通訊品質，而LID在選擇CH時會發生小範圍內的節點連向同一具有最小辨識碼的節點，因此叢集數量較MPC少。
+> 
+> 叢集首的存活時間將決定整個叢集與基礎設施的連線時間，若能延長叢集首的存活時間，將能夠降低與基礎設施的重新連線次數，進而減少不必要的封包傳輸， 圖 6 累積叢集首平均存活時間中，由於MPCS並不對叢集首的挑選進行干涉，而只提升叢集首以外節點的連線品質，因此叢集首的變動較少，唯有與基礎設施連線品質不佳導致斷線才會重新連線，可由圖中得知MPCS較其他演算法於延長叢集首與基礎設施連線時間有最好的表現。
+> 
+> - 圖 5  時間 – 累積叢集數量
+> ![g2](pictures/graph2.png)
+> 
+> - 圖 6  時間 – 累積叢集首平均存活時間
+> ![g3](pictures/graph3.png)
+> 
+> - 圖 7  時間 – 累積叢集成員平均數量
+> ![g4](pictures/graph4.png)
+> 
+> 由於所有節點在選擇parent時，都選擇與自己連線品質最佳的節點，因此在不超過叢集成員限制前，叢集成員的數量越多，對降低整體冗餘封包與連線干擾越有幫助，也代表因叢集化所帶來的優點越明顯。 圖 7 累積叢集成員平均數量中，以MPCS與HCC兩演算法成效最佳，但若結合 圖 4 中叢集首與基礎設施斷線累積次數而言，HCC將因為極高的斷線次數，導致與基礎設施同一次的數據可能需要多次的傳輸才能成功，且較大的叢集也需要花費更多的時間進行行車數據的傳輸，將放大重傳的可能性，而MPCS則因較少的斷線次數而影響較小。
+
+# 結論
+> 在本文中我們提出了基於階層式架構與貪婪演算法的最大預測連線存活時間演算法(Maximum Predicted Connection Survival time algorithm, MPCS)，以提供車輛於行駛中能動態挑選叢集，並降低因叢集過程而產生的額外成本。在叢集選擇中使用基於LLT的預測量化指標，並引入行徑方向夾角與同一叢集對連線預測的獎勵與懲罰，以提供車輛進行叢集挑選的依據，並實現以基於叢集首備份方法(BackUp Cluster Head, BUCH)[6]的newParent_list備份方案，提供相對穩定的叢集使行車做選擇。在之後的工作中，我們將進一步改進叢集策略與預測方式，使行車能挑選到最佳的叢集，使叢集變動機率下降，以滿足VANET對效率的要求。
+
+# 參考文獻
+> [1]	H. Moustafa and Y. Zhang, Vehicular Networks: Techniques, Standards, and Applications, 1st ed. Boston, MA, USA: Auerbach Publications, 2009.
+> [2] 	X. Cheng, L. Yang, and X. Shen, “D2D for intel-ligent transportation systems: A feasibility study,” IEEE Trans. Intell. Transp. Syst., vol. 16, no. 4, pp. 1784–1793, Aug. 2015.
+> [3]	R. S. Bali, N. Kumar and J. J. Rodrigues, "Clus-tering in vehicular ad hoc networks: Taxonomy challenges and solutions", Veh. Commun., vol. 1, no. 3, pp. 134-152, 2014.
+> [4]	C. Cooper, D. Franklin, M. Ros, F. Safaei, and M. Abolhasan, “A comparative survey of VANET clustering techniques,” IEEE Communications Surveys & Tutorials, vol. 99, p. 1, 2017.
+> [5]	M.Newlin Rajkumar, M.Nithya, and P.HemaLatha, OVERVIEW OF VANET WITH ITS FEATURES AND SECURITY ATTACKS, International Research Journal of Engineering and Technology (IRJET), vol. 3, Jan. 2016
+> [6]	Mengying Ren, Jun Zhang, Lyes Khoukhi, Hou-da Labiod, and Véronique Vèque. A Uniﬁed Framework of Clustering Approach in Vehicular Ad Hoc Networks. IEEE Transactions on Intelli-gent Transportation Systems, IEEE, 19 (5), pp.1401-1414, May. 2018.
+> [7]	Xiang Ji, Huiqun Yu, Guisheng Fan, Huaiying Sun, and Liqiong Chen. Efficient and Reliable Cluster-Based Data Transmission for Vehicular Ad Hoc Networks. Hindiawi, Mobile Information Systems, DOI: 10.1155/2018/9826782 , July 2018.
+> [8]	S. S. Wang and Y. S. Lin, “PassCAR: a passive clustering aided routing protocol for vehicular ad hoc networks,” Computer Communications, vol. 36, no. 2, pp. 170–179, 2013.
+> [9]	S. Ucar, S. C. Ergen, and O. Ozkasap, “Multi-hop-cluster-based IEEE 802.11p and LTE hybrid architecture for VANET safety message dissemi-nation,” IEEE Transactions on Vehicular Tech-nology, vol. 65, no. 4, pp. 2621–2636, 2016.
+> [10]	M. Gerla and J. T. C. Tsai, “Multiuser, mobile, multimedia radio network,” Wireless Network, vol. 1, pp.255–265, Oct. 1995.
+> [11]	OpenStreetMap, 2017, http://www.openstreetmap.org/.
+> [12]	SUMO: Simulation of Urban Mobility, 2015, http://sumo.sourceforge.net.
+> [13]	The Network Simulator: NS2, 2015, http://www.isi.edu/nsnam/ns/.
+> [14] Teerawat Issariyakul, and Ekram Hossain (2012). Introduction to Network Simulator NS2. USA: Springer US
