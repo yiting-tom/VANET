@@ -72,68 +72,61 @@
  
 演算法 1 最大預測連線存活時間
 (Maximum Predicted Connection Survival time algorithm, MPCS)
+```
+IF C.Tcollect is Time Up OR Force THEN
+    IF C.state is “IN” THEN
+        IF C receive pak from other cars THEN
+            LET newParent_list TO CS(C)
+            FOR newParent IN newParent_list DO
+                IF two clusters could be merge THEN
+                    CAR_CONNECT(C, newParent)
+                    C join newParent.cluster
+                    C change state to CM
+                    LET join_flag TO TRUE
+                    BREAK
+                END IF
+            END FOR
+        ELSE
+            LET newClu TO CLUSTER_CREATE(C)
+            C join newClu
+            C change state to CH
+        END IF
 
-<code>
+    ELSE IF C.state is “CM” THEN
+        IF C receive any pak THEN
+            LET newParent_list TO CS(C)
+            FOR newParent IN newParent_list DO
+                IF two clusters could be merged AND newParent is not C.child THEN
+                    CAR_DISCONNECT(C, parent)
+                    CAR_CONNECT(C, newParent)
+                    C join newParent.cluster
+                END IF
+            END FOR
+        ELSE
+            LET newClu TO CLUSTER_CREATE(C)
+            C join newClu
+            C change state to CH
+        END IF
 
-    IF C.Tcollect is Time Up OR Force THEN
-        IF C.state is “IN” THEN
-            IF C receive pak from other cars THEN
-                LET newParent_list TO CS(C)
-                FOR newParent IN newParent_list DO
-                    IF two clusters could be merge THEN
+    ELSE IF C.state is “CH” THEN
+        IF C receive pak from other cluster THEN
+            LET newParent_list TO CS(C)
+            FOR newParent  IN newParent_list DO
+                IF two clusters could be merge THEN
+                    IF newParent.Upper_LLT > C.Upper_LLT THEN
                         CAR_CONNECT(C, newParent)
-                        C join newParent.cluster
+                        C join to newParent.cluster
                         C change state to CM
-                        LET join_flag TO TRUE
+                        BREAK
+                    ELSE IF newParent.Upper_LLT < C.Upper_LLT THEN
+                        CAR_CONNECT(newParent, C)
+                        newParent join to C.cluster 
+                        newParent change state to CM
                         BREAK
                     END IF
-                END FOR
-            ELSE
-                LET newClu TO CLUSTER_CREATE(C)
-                C join newClu
-                C change state to CH
-            END IF
-  
-        ELSE IF C.state is “CM” THEN
-            IF C receive any pak THEN
-                LET newParent_list TO CS(C)
-                FOR newParent IN newParent_list DO
-                    IF two clusters could be merged
-                    AND newParent is not C.child THEN
-                        CAR_DISCONNECT(C, parent)
-        CAR_CONNECT(C, newParent)
-        C join newParent.cluster
-                    END IF
-                END FOR
-            ELSE
-    LET newClu TO CLUSTER_CREATE(C)
-    C join newClu
-    C change state to CH
-            END IF
-  
-        ELSE IF C.state is “CH” THEN
-            IF C receive pak from other cluster THEN
-                LET newParent_list TO CS(C)
-                FOR newParent  IN newParent_list DO
-                    IF two clusters could be merge THEN
-                        IF newParent.Upper_LLT > C.Upper_LLT THEN
-                            CAR_CONNECT(C, newParent)
-                            C join to newParent.cluster
-                            C change state to CM
-                            BREAK
-                        ELSE IF newParent.Upper_LLT < C.Upper_LLT THEN
-                            CAR_CONNECT(newParent, C)
-                            newParent join to C.cluster 
-                            newParent change state to CM
-                            BREAK
-                        END IF
-                    END IF
-                END FOR
-            END IF
+                END IF
+            END FOR
         END IF
     END IF
-
-</code>
-  
-  
-  
+END IF
+```
