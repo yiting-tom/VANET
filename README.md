@@ -67,66 +67,63 @@
 > 若車輛狀態為CM，且Tcollect期間收到來自CM或CH的封包，進行叢集挑選(SC)演算法(2)挑選出最適合的newParent，如果newParent不是目前的parent，則與原本的parent斷開連線並與newParent連線，加入newParent所在叢集，否則保持與原parent的連線，如此車輛能保持與最合適的parent連線，CH也不必特別對連線不佳而影響到整體叢集品質的CM做維護。若期間沒有收到parent的封包，也沒有收到其他叢集的邀請封包，代表此子叢集已脫離主叢集，則建立新的叢集，改變狀態為CH，並與基礎設施建立連線。
 > 
 > 若車輛狀態為CH，且期間有收到來自其他叢集的邀請封包，將經過叢集挑選(SC) 演算法 2 挑選出最適合的newParent，若判斷合併後不超出叢集最大成員限制、層數限制，則進行Upper_LLT比較，由具有較小Upper_LLT的節點向另一節點合併，並將加入節點狀態更改為CM。
-
-
- 
-演算法 1 最大預測連線存活時間
-(Maximum Predicted Connection Survival time algorithm, MPCS)
-```
-IF C.Tcollect is Time Up OR Force THEN
-    IF C.state is “IN” THEN
-        IF C receive pak from other cars THEN
-            LET newParent_list TO CS(C)
-            FOR newParent IN newParent_list DO
-                IF two clusters could be merge THEN
-                    CAR_CONNECT(C, newParent)
-                    C join newParent.cluster
-                    C change state to CM
-                    LET join_flag TO TRUE
-                    BREAK
-                END IF
-            END FOR
-        ELSE
-            LET newClu TO CLUSTER_CREATE(C)
-            C join newClu
-            C change state to CH
-        END IF
-
-    ELSE IF C.state is “CM” THEN
-        IF C receive any pak THEN
-            LET newParent_list TO CS(C)
-            FOR newParent IN newParent_list DO
-                IF two clusters could be merged AND newParent is not C.child THEN
-                    CAR_DISCONNECT(C, parent)
-                    CAR_CONNECT(C, newParent)
-                    C join newParent.cluster
-                END IF
-            END FOR
-        ELSE
-            LET newClu TO CLUSTER_CREATE(C)
-            C join newClu
-            C change state to CH
-        END IF
-
-    ELSE IF C.state is “CH” THEN
-        IF C receive pak from other cluster THEN
-            LET newParent_list TO CS(C)
-            FOR newParent  IN newParent_list DO
-                IF two clusters could be merge THEN
-                    IF newParent.Upper_LLT > C.Upper_LLT THEN
-                        CAR_CONNECT(C, newParent)
-                        C join to newParent.cluster
-                        C change state to CM
-                        BREAK
-                    ELSE IF newParent.Upper_LLT < C.Upper_LLT THEN
-                        CAR_CONNECT(newParent, C)
-                        newParent join to C.cluster 
-                        newParent change state to CM
-                        BREAK
-                    END IF
-                END IF
-            END FOR
-        END IF
-    END IF
-END IF
-```
+> 
+> > - 演算法 1 最大預測連線存活時間 (Maximum Predicted Connection Survival time algorithm, MPCS)
+> > ```
+> > IF C.Tcollect is Time Up OR Force THEN
+> >     IF C.state is “IN” THEN
+> >         IF C receive pak from other cars THEN
+> >             LET newParent_list TO CS(C)
+> >             FOR newParent IN newParent_list DO
+> >                 IF two clusters could be merge THEN
+> >                     CAR_CONNECT(C, newParent)
+> >                     C join newParent.cluster
+> >                     C change state to CM
+> >                     LET join_flag TO TRUE
+> >                     BREAK
+> >                 END IF
+> >             END FOR
+> >         ELSE
+> >             LET newClu TO CLUSTER_CREATE(C)
+> >             C join newClu
+> >             C change state to CH
+> >         END IF
+> > 
+> >     ELSE IF C.state is “CM” THEN
+> >         IF C receive any pak THEN
+> >             LET newParent_list TO CS(C)
+> >             FOR newParent IN newParent_list DO
+> >                 IF two clusters could be merged AND newParent is not C.child THEN
+> >                     CAR_DISCONNECT(C, parent)
+> >                     CAR_CONNECT(C, newParent)
+> >                     C join newParent.cluster
+> >                 END IF
+> >             END FOR
+> >         ELSE
+> >             LET newClu TO CLUSTER_CREATE(C)
+> >             C join newClu
+> >             C change state to CH
+> >         END IF
+> > 
+> >     ELSE IF C.state is “CH” THEN
+> >         IF C receive pak from other cluster THEN
+> >             LET newParent_list TO CS(C)
+> >             FOR newParent  IN newParent_list DO
+> >                 IF two clusters could be merge THEN
+> >                     IF newParent.Upper_LLT > C.Upper_LLT THEN
+> >                         CAR_CONNECT(C, newParent)
+> >                         C join to newParent.cluster
+> >                         C change state to CM
+> >                         BREAK
+> >                     ELSE IF newParent.Upper_LLT < C.Upper_LLT THEN
+> >                         CAR_CONNECT(newParent, C)
+> >                         newParent join to C.cluster 
+> >                         newParent change state to CM
+> >                         BREAK
+> >                     END IF
+> >                 END IF
+> >             END FOR
+> >         END IF
+> >     END IF
+> > END IF
+> > ```
