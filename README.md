@@ -127,3 +127,45 @@
 > >     END IF
 > > END IF
 > > ```
+
+# 叢集選擇
+> 參考LLT[8] (1)式，加入行徑方向與其他因素，以作為節點選擇叢集時的量化指標，並以叢集選擇 演算法 2 取得newParent_list、實現以基於叢集首備份方法(BackUp Cluster Head, BUCH)[6]的newParent_list備份方案，當child與原parent發生意外斷線時，可快取此列表中的下一parent。
+> 
+> ![eq1](./pictures/eq1.png)
+> 
+> 於原LLT(1)式中加入Upper_LLT(2)式，以評判車輛與newParent預測連線存活時間的相對好壞(3)式：
+> 
+> ![eq2a3](./pictures/eq2a3.png)
+> 
+> 若兩車行徑方向夾角(∆θ)於一定範圍內，給予方向夾角比例的額外獎勵，若於反向範圍則給予懲罰(4)式：
+> 
+> ![eq4](./pictures/eq4.png)
+> 
+> 為了降低叢集的變動，若兩車為同一叢集則獲得額外獎勵(5)式:
+> 
+> ![eq5](./pictures/eq5.png)
+> 
+> 叢集選擇 演算法 2 中，以接收到的邀請封包與傳輸失敗的封包之差，為原始預測連線存活參數(predicted connection survival time argument, pcs)，由(3)式、(4)式、(5)式進行獎勵與懲罰，其中為了調整每式造成的影響程度，加入LLTF、ANGF、SCF參數。
+> > 演算法 2  叢集選擇 (Cluster Selection algorithm, SC) 
+> >
+> > ```
+> > LET cand_map TO EMPTY_MAP
+> > FOR Cn IN C.Pcm, C.Pch DO 
+> >     IF Cn NOT IN cand_map THEN
+> >         LET pos_pak TO pak number sent from Cn
+> >         LET neg_pak TO pak number drop from Cn
+> >         LET pcs TO pos_pak – neg_pak
+> > 
+> >         IF dLLT(C, Cn) > 0 THEN
+> >             pcs += ln(dLLT(C, Cn)) * LLTF * pcs
+> >         ELSE IF dLLT(C, Cn) < 0 THEN
+> >             pcs -= ln(-dLLT(C, Cn)) * LLTF * pcs
+> >         END IF
+> >         pcs += Ang(C, Cn) * ANGF * pcs
+> >         pcs += SC(C, Cn) * SCF * pcs
+> >         cand_map ADD {Cn : pcs}
+> > END FOR
+> > RETURN cand_Map
+> > ```
+
+# 連線維護
