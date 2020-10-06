@@ -236,17 +236,17 @@
 > 在本文中我們提出了基於階層式架構與貪婪演算法的最大預測連線存活時間演算法(Maximum Predicted Connection Survival time algorithm, MPCS)，以提供車輛於行駛中能動態挑選叢集，並降低因叢集過程而產生的額外成本。在叢集選擇中使用基於LLT的預測量化指標，並引入行徑方向夾角與同一叢集對連線預測的獎勵與懲罰，以提供車輛進行叢集挑選的依據，並實現以基於叢集首備份方法(BackUp Cluster Head, BUCH)[6]的newParent_list備份方案，提供相對穩定的叢集使行車做選擇。在之後的工作中，我們將進一步改進叢集策略與預測方式，使行車能挑選到最佳的叢集，使叢集變動機率下降，以滿足VANET對效率的要求。
 
 # 參考文獻
-> [1]	H. Moustafa and Y. Zhang, Vehicular Networks: Techniques, Standards, and Applications, 1st ed. Boston, MA, USA: Auerbach Publications, 2009.
-> [2] 	X. Cheng, L. Yang, and X. Shen, “D2D for intel-ligent transportation systems: A feasibility study,” IEEE Trans. Intell. Transp. Syst., vol. 16, no. 4, pp. 1784–1793, Aug. 2015.
-> [3]	R. S. Bali, N. Kumar and J. J. Rodrigues, "Clus-tering in vehicular ad hoc networks: Taxonomy challenges and solutions", Veh. Commun., vol. 1, no. 3, pp. 134-152, 2014.
-> [4]	C. Cooper, D. Franklin, M. Ros, F. Safaei, and M. Abolhasan, “A comparative survey of VANET clustering techniques,” IEEE Communications Surveys & Tutorials, vol. 99, p. 1, 2017.
-> [5]	M.Newlin Rajkumar, M.Nithya, and P.HemaLatha, OVERVIEW OF VANET WITH ITS FEATURES AND SECURITY ATTACKS, International Research Journal of Engineering and Technology (IRJET), vol. 3, Jan. 2016
-> [6]	Mengying Ren, Jun Zhang, Lyes Khoukhi, Hou-da Labiod, and Véronique Vèque. A Uniﬁed Framework of Clustering Approach in Vehicular Ad Hoc Networks. IEEE Transactions on Intelli-gent Transportation Systems, IEEE, 19 (5), pp.1401-1414, May. 2018.
-> [7]	Xiang Ji, Huiqun Yu, Guisheng Fan, Huaiying Sun, and Liqiong Chen. Efficient and Reliable Cluster-Based Data Transmission for Vehicular Ad Hoc Networks. Hindiawi, Mobile Information Systems, DOI: 10.1155/2018/9826782 , July 2018.
-> [8]	S. S. Wang and Y. S. Lin, “PassCAR: a passive clustering aided routing protocol for vehicular ad hoc networks,” Computer Communications, vol. 36, no. 2, pp. 170–179, 2013.
-> [9]	S. Ucar, S. C. Ergen, and O. Ozkasap, “Multi-hop-cluster-based IEEE 802.11p and LTE hybrid architecture for VANET safety message dissemi-nation,” IEEE Transactions on Vehicular Tech-nology, vol. 65, no. 4, pp. 2621–2636, 2016.
-> [10]	M. Gerla and J. T. C. Tsai, “Multiuser, mobile, multimedia radio network,” Wireless Network, vol. 1, pp.255–265, Oct. 1995.
-> [11]	OpenStreetMap, 2017, http://www.openstreetmap.org/.
-> [12]	SUMO: Simulation of Urban Mobility, 2015, http://sumo.sourceforge.net.
-> [13]	The Network Simulator: NS2, 2015, http://www.isi.edu/nsnam/ns/.
+> [1]	H. Moustafa and Y. Zhang, Vehicular Networks: Techniques, Standards, and Applications, 1st ed. Boston, MA, USA: Auerbach Publications, 2009. \
+> [2] 	X. Cheng, L. Yang, and X. Shen, “D2D for intel-ligent transportation systems: A feasibility study,” IEEE Trans. Intell. Transp. Syst., vol. 16, no. 4, pp. 1784–1793, Aug. 2015. \
+> [3]	R. S. Bali, N. Kumar and J. J. Rodrigues, "Clus-tering in vehicular ad hoc networks: Taxonomy challenges and solutions", Veh. Commun., vol. 1, no. 3, pp. 134-152, 2014. \
+> [4]	C. Cooper, D. Franklin, M. Ros, F. Safaei, and M. Abolhasan, “A comparative survey of VANET clustering techniques,” IEEE Communications Surveys & Tutorials, vol. 99, p. 1, 2017. \
+> [5]	M.Newlin Rajkumar, M.Nithya, and P.HemaLatha, OVERVIEW OF VANET WITH ITS FEATURES AND SECURITY ATTACKS, International Research Journal of Engineering and Technology (IRJET), vol. 3, Jan. 2016 \
+> [6]	Mengying Ren, Jun Zhang, Lyes Khoukhi, Hou-da Labiod, and Véronique Vèque. A Uniﬁed Framework of Clustering Approach in Vehicular Ad Hoc Networks. IEEE Transactions on Intelli-gent Transportation Systems, IEEE, 19 (5), pp.1401-1414, May. 2018. \
+> [7]	Xiang Ji, Huiqun Yu, Guisheng Fan, Huaiying Sun, and Liqiong Chen. Efficient and Reliable Cluster-Based Data Transmission for Vehicular Ad Hoc Networks. Hindiawi, Mobile Information Systems, DOI: 10.1155/2018/9826782 , July 2018. \
+> [8]	S. S. Wang and Y. S. Lin, “PassCAR: a passive clustering aided routing protocol for vehicular ad hoc networks,” Computer Communications, vol. 36, no. 2, pp. 170–179, 2013. \
+> [9]	S. Ucar, S. C. Ergen, and O. Ozkasap, “Multi-hop-cluster-based IEEE 802.11p and LTE hybrid architecture for VANET safety message dissemi-nation,” IEEE Transactions on Vehicular Tech-nology, vol. 65, no. 4, pp. 2621–2636, 2016. \
+> [10]	M. Gerla and J. T. C. Tsai, “Multiuser, mobile, multimedia radio network,” Wireless Network, vol. 1, pp.255–265, Oct. 1995. \
+> [11]	OpenStreetMap, 2017, http://www.openstreetmap.org/. \
+> [12]	SUMO: Simulation of Urban Mobility, 2015, http://sumo.sourceforge.net. \
+> [13]	The Network Simulator: NS2, 2015, http://www.isi.edu/nsnam/ns/. \
 > [14] Teerawat Issariyakul, and Ekram Hossain (2012). Introduction to Network Simulator NS2. USA: Springer US
