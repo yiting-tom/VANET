@@ -2,7 +2,7 @@
 ## Multi-hop VANET-Clustering Algorithm Using Greedy Method
 <hr>
 
-![nam](./pictures/Clustering.gif)
+<img src="./pictures/Clustering.gif" width=100%>
 
 # 緒論
 > > 欲透過車輛隨意網路(Vehicular Ad Hoc Net-work, VANET)提供服務，即時且高效的通訊系統是必須的，而目前通訊方式主要分為車輛對基礎設施(Vehicle-to-Infrastructure)，與車輛對車輛(Vehicle-to-Vehicle)[1][2]，其中兩者如何調配是值得考慮的，若所有車輛都直接與基礎設施通訊，基礎設施接收訊號時會受到大量干擾與過多的冗餘資訊，因此鄰近車輛若能將彼此行車資訊整理後，再由指定車輛與基礎設施進行通訊，則可降低資訊冗餘提昇通訊品質。
